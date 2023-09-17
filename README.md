@@ -42,7 +42,7 @@ Setup the required environments and install `medmnist` as a standard Python pack
 
 Or install from source:
 
-    pip install --upgrade git+https://github.com/MedMNIST/MedMNIST.git
+    pip install --upgrade git+https://github.com/MalindaH/MedMNIST.git
 
 Check whether you have installed the latest [version](medmnist/info.py):
 
