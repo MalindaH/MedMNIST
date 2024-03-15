@@ -45,7 +45,8 @@ class Evaluator:
 
         task = self.info["task"]
         auc = getAUC(self.labels, y_score, task)
-        acc = getACC(self.labels, y_score, task)
+        # acc = getACC(self.labels, y_score, task)
+        acc, tmp = getACCVector(self.labels, y_score, task)
         metrics = Metrics(auc, acc)
 
         if save_folder is not None:
@@ -206,6 +207,7 @@ def getACCVector(y_true, y_score, task, threshold=0.5):
     y_true = y_true.squeeze()
     y_score = y_score.squeeze()
 
+    temp = 0.
     if task == "multi-label, binary-class":
         y_pre = y_score > threshold
         acc = 0
@@ -224,7 +226,7 @@ def getACCVector(y_true, y_score, task, threshold=0.5):
     else:
         ret = accuracy_score(y_true, np.argmax(y_score, axis=-1))
 
-    return ret
+    return ret, temp
 
 
 def save_results(y_true, y_score, outputpath):
