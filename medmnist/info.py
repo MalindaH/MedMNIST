@@ -7,9 +7,9 @@ import warnings
 
 
 def get_default_root():
-    home = expanduser("~")
-    # dirpath = os.path.join(home, ".medmnist")
-    dirpath = os.path.join(home, "scratch/lh9998/medmnist")
+    # home = expanduser("~")
+    home = "/scratch/gpfs/lh9998"
+    dirpath = os.path.join(home, ".medmnist")
 
     try:
         if not os.path.exists(dirpath):
