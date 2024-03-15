@@ -54,7 +54,7 @@ class Evaluator:
                 save_folder, self.get_standard_evaluation_filename(metrics, run)
             )
             pd.DataFrame(y_score).to_csv(path, header=None)
-        return metrics
+        return metrics, tmp
 
     def get_standard_evaluation_filename(self, metrics, run=None):
         eval_txt = "_".join([f"[{k}]{v:.3f}" for k, v in zip(metrics._fields, metrics)])
