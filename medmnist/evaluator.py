@@ -31,7 +31,7 @@ class Evaluator:
                 + "Please specify and create the `root` directory manually."
             )
 
-        npz_file = np.load(os.path.join(self.root, "{}.npz".format(self.flag)))
+        npz_file = np.load(os.path.join(self.root, "{}{}.npz".format(self.flag, self.size_flag)))
 
         self.info = INFO[self.flag]
 
@@ -45,8 +45,7 @@ class Evaluator:
 
         task = self.info["task"]
         auc = getAUC(self.labels, y_score, task)
-        # acc = getACC(self.labels, y_score, task)
-        acc, tmp = getACCVector(self.labels, y_score, task)
+        acc = getACC(self.labels, y_score, task)
         metrics = Metrics(auc, acc)
 
         if save_folder is not None:
@@ -54,7 +53,7 @@ class Evaluator:
                 save_folder, self.get_standard_evaluation_filename(metrics, run)
             )
             pd.DataFrame(y_score).to_csv(path, header=None)
-        return metrics, tmp
+        return metrics
 
     def get_standard_evaluation_filename(self, metrics, run=None):
         eval_txt = "_".join([f"[{k}]{v:.3f}" for k, v in zip(metrics._fields, metrics)])
@@ -194,39 +193,6 @@ def getACC(y_true, y_score, task, threshold=0.5):
         ret = accuracy_score(y_true, np.argmax(y_score, axis=-1))
 
     return ret
-
-
-def getACCVector(y_true, y_score, task, threshold=0.5):
-    """Accuracy metric.
-    :param y_true: the ground truth labels, shape: (n_samples, n_labels) or (n_samples,) if n_labels==1
-    :param y_score: the predicted score of each class,
-    shape: (n_samples, n_labels) or (n_samples, n_classes) or (n_samples,) if n_labels==1 or n_classes==1
-    :param task: the task of current dataset
-    :param threshold: the threshold for multilabel and binary-class tasks
-    """
-    y_true = y_true.squeeze()
-    y_score = y_score.squeeze()
-
-    temp = 0.
-    if task == "multi-label, binary-class":
-        y_pre = y_score > threshold
-        acc = 0
-        for label in range(y_true.shape[1]):
-            label_acc = accuracy_score(y_true[:, label], y_pre[:, label])
-            acc += label_acc
-        ret = acc / y_true.shape[1]
-        temp = accuracy_score(y_true, y_pre)
-        print(ret, temp)
-    elif task == "binary-class":
-        if y_score.ndim == 2:
-            y_score = y_score[:, -1]
-        else:
-            assert y_score.ndim == 1
-        ret = accuracy_score(y_true, y_score > threshold)
-    else:
-        ret = accuracy_score(y_true, np.argmax(y_score, axis=-1))
-
-    return ret, temp
 
 
 def save_results(y_true, y_score, outputpath):
